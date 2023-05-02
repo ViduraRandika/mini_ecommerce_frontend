@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Breadcrumb,
   Button,
@@ -9,12 +9,124 @@ import {
   GridColumn,
   Image,
 } from "semantic-ui-react";
+import * as Yup from "yup";
 import NavBar from "./NavBar";
+import {
+  addNewProduct,
+  getSelectedProductDetails,
+  updateSelectedProduct,
+} from "../services/ProductService";
+import { toast } from "react-toastify";
+import { useNavigate, useParams } from "react-router-dom";
+
+const validationSchema = Yup.object().shape({
+  sku: Yup.string().required("SKU is required"),
+  name: Yup.string().required("Name is required"),
+  qty: Yup.number()
+    .positive("Quantity must be a positive number")
+    .required("Quantity is required"),
+  description: Yup.string().required("Description is required"),
+});
 
 const EditProduct = () => {
-  const submitButtonRef = useRef(null);
+    const { id } = useParams();
+    
+    const navigate = useNavigate();
 
-  const handleSubmit = () => {};
+  const [isLoading, setIsLoading] = useState(true);
+  const [values, setValues] = useState({
+    sku: "",
+    name: "",
+    qty: 0,
+    description: "",
+    price: 0,
+  });
+
+  const fetchData = async () => {
+    try {
+      const res = await getSelectedProductDetails(id);
+      if (res) {
+        setValues({
+          sku: res.sku,
+          description: res.description,
+          name: res.name,
+          price: res.price,
+          qty: res.quantity,
+        });
+      } else {
+        toast("Failed to fetch product details", {
+          theme: "colored",
+          type: "error",
+          autoClose: 3000,
+        });
+      }
+      setIsLoading(false);
+    } catch (error) {
+      toast("Failed to fetch product details", {
+        theme: "colored",
+        type: "error",
+        autoClose: 3000,
+      });
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const [errors, setErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    setIsSubmitting(true);
+    setErrors({});
+
+    validationSchema
+      .validate(values, { abortEarly: false })
+      .then(async () => {
+        // Validation succeeded
+        setIsSubmitting(true);
+
+        const res = await updateSelectedProduct(id,values);
+        if (res) {
+            fetchData();
+          toast("Product updated", {
+            theme: "colored",
+            type: "success",
+            autoClose: 3000,
+          });
+            navigate("/")
+        } else {
+          toast("Something went wront, please try again", {
+            theme: "colored",
+            type: "error",
+            autoClose: 3000,
+          });
+        }
+      })
+      .catch((validationErrors) => {
+        // Validation failed
+        const errors = {};
+        validationErrors.inner.forEach((error) => {
+          errors[error.path] = error.message;
+        });
+        setErrors(errors);
+      })
+      .finally(() => {
+        setIsSubmitting(false);
+      });
+  };
+
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    setValues((values) => ({
+      ...values,
+      [name]: value,
+    }));
+  };
+
   return (
     <>
       <NavBar />
@@ -46,7 +158,32 @@ const EditProduct = () => {
                       backgroundColor: "var(--elementbg-color)",
                       border: "0",
                     }}
+                    name="sku"
+                    value={values.sku}
+                    onChange={handleChange}
                   />
+                  {errors.sku && (
+                    <div style={{ color: "red" }}>{errors.sku}</div>
+                  )}
+                </Form.Field>
+              </GridColumn>
+              <GridColumn width={8}>
+                <Form.Field>
+                  <label>Price</label>
+                  <input
+                    type="number"
+                    placeholder="price"
+                    style={{
+                      backgroundColor: "var(--elementbg-color)",
+                      border: "0",
+                    }}
+                    name="price"
+                    value={values.price}
+                    onChange={handleChange}
+                  />
+                  {errors.price && (
+                    <div style={{ color: "red" }}>{errors.price}</div>
+                  )}
                 </Form.Field>
               </GridColumn>
             </Grid.Row>
@@ -61,7 +198,13 @@ const EditProduct = () => {
                       backgroundColor: "var(--elementbg-color)",
                       border: "0",
                     }}
+                    name="name"
+                    value={values.name}
+                    onChange={handleChange}
                   />
+                  {errors.name && (
+                    <div style={{ color: "red" }}>{errors.name}</div>
+                  )}
                 </Form.Field>
               </GridColumn>
               <GridColumn width={8}>
@@ -74,7 +217,13 @@ const EditProduct = () => {
                       backgroundColor: "var(--elementbg-color)",
                       border: "0",
                     }}
+                    name="qty"
+                    value={values.qty}
+                    onChange={handleChange}
                   />
+                  {errors.qty && (
+                    <div style={{ color: "red" }}>{errors.qty}</div>
+                  )}
                 </Form.Field>
               </GridColumn>
             </Grid.Row>
@@ -92,7 +241,13 @@ const EditProduct = () => {
                       backgroundColor: "var(--elementbg-color)",
                       border: "0",
                     }}
+                    name="description"
+                    value={values.description}
+                    onChange={handleChange}
                   />
+                  {errors.description && (
+                    <div style={{ color: "red" }}>{errors.description}</div>
+                  )}
                 </Form.Field>
               </GridColumn>
             </Grid.Row>
@@ -138,10 +293,9 @@ const EditProduct = () => {
                     backgroundColor: "var(--primary-color)",
                     color: "white",
                   }}
-                  ref={submitButtonRef}
                   onClick={handleSubmit}
                 >
-                  Save changes
+                 Save changes
                 </Button>
               </GridColumn>
             </Grid.Row>

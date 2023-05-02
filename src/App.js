@@ -8,19 +8,37 @@ import Register from './components/Register';
 import Login from './components/Login';
 import VendorPrivateRoute from './components/VendorPrivateRoute';
 import AddProduct from './components/AddProduct';
+import { ToastContainer } from 'react-toastify';
+import "react-toastify/dist/ReactToastify.css";
+import EditProduct from './components/EditProduct';
 
 function App() {
   return (
     <>
-      <BrowserRouter basename='/'>
+      <ToastContainer
+        position="top-right"
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        draggable
+        pauseOnHover={false}
+        pauseOnFocusLoss={false}
+      />
+      <BrowserRouter basename="/">
         <Routes>
-          <Route exact path="/register" element={ <Register/> } />
+          <Route exact path="/register" element={<Register />} />
           <Route exact path="/login" element={<Login />} />
-          
+
           {/* ONLY LOGGED IN VENDORS CAN ACCESS */}
           <Route element={<VendorPrivateRoute />}>
-            <Route exact path="/" element={<MainLayout Component={MainPage}/>} />
-            <Route exact path="/add-new-product" element={<AddProduct/>} />
+            <Route
+              exact
+              path="/"
+              element={<MainLayout Component={MainPage} />}
+            />
+            <Route exact path="/add-new-product" element={<AddProduct />} />
+            <Route exact path="/edit-product/:id" element={<EditProduct />} />
           </Route>
         </Routes>
       </BrowserRouter>

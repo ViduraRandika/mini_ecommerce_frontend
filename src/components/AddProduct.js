@@ -12,6 +12,8 @@ import {
 import * as Yup from "yup";
 import NavBar from "./NavBar";
 import { addNewProduct } from "../services/ProductService";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const validationSchema = Yup.object().shape({
   sku: Yup.string().required("SKU is required"),
@@ -23,11 +25,13 @@ const validationSchema = Yup.object().shape({
 });
 
 const AddProduct = () => {
+  const navigate = useNavigate();
   const [values, setValues] = useState({
     sku: "",
     name: "",
     qty: 0,
     description: "",
+    price: 0,
   });
 
   const [errors, setErrors] = useState({});
@@ -45,8 +49,21 @@ const AddProduct = () => {
         setIsSubmitting(true);
 
         const res = await addNewProduct(values);
-        console.log(res);
-        console.log(values);
+        if (res) {
+          fetchData();
+          toast("Product added", {
+            theme: "colored",
+            type: "success",
+            autoClose: 3000,
+          });
+          navigate("/");
+        } else {
+          toast("Something went wront, please try again", {
+            theme: "colored",
+            type: "error",
+            autoClose: 3000,
+          });
+        }
       })
       .catch((validationErrors) => {
         // Validation failed
@@ -106,6 +123,25 @@ const AddProduct = () => {
                   />
                   {errors.sku && (
                     <div style={{ color: "red" }}>{errors.sku}</div>
+                  )}
+                </Form.Field>
+              </GridColumn>
+              <GridColumn width={8}>
+                <Form.Field>
+                  <label>Price</label>
+                  <input
+                    type="number"
+                    placeholder="price"
+                    style={{
+                      backgroundColor: "var(--elementbg-color)",
+                      border: "0",
+                    }}
+                    name="price"
+                    value={values.price}
+                    onChange={handleChange}
+                  />
+                  {errors.price && (
+                    <div style={{ color: "red" }}>{errors.price}</div>
                   )}
                 </Form.Field>
               </GridColumn>
