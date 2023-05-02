@@ -5,6 +5,7 @@ import MainLayout from './components/MainLayout';
 import MainPage from './components/MainPage';
 import SearchResults from './components/SearchResults';
 import Register from './components/Register';
+import Login from './components/Login';
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
       <BrowserRouter basename='/'>
         <Routes>
           <Route exact path="/register" element={ <Register/> } />
+          <Route exact path="/login" element={ <Login/> } />
         </Routes>
       </BrowserRouter>
     </>
