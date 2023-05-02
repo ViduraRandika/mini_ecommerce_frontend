@@ -252,16 +252,67 @@ const MainPage = () => {
         )}
       </Grid>
       <Modal open={open} onClose={() => setOpen(false)} size="tiny">
-        <Modal.Header>Delete Product</Modal.Header>
         <Modal.Content>
-          <p>Are you sure you want to delete this product?</p>
+          <Grid>
+            <Grid.Row>
+              <GridColumn
+                width={16}
+                style={{ justifyContent: "center", display: "flex" }}
+              >
+                <img src="alert.svg" />
+              </GridColumn>
+            </Grid.Row>
+            <Grid.Row>
+              <GridColumn
+                width={16}
+                style={{ justifyContent: "center", display: "flex" }}
+              >
+                <h2>ARE YOU SURE ?</h2>
+              </GridColumn>
+            </Grid.Row>
+            <Grid.Row>
+              <GridColumn
+                width={16}
+                style={{ justifyContent: "center", display: "flex" }}
+              >
+                <h3>
+                  You will not be able to undo this action if you proceed!
+                </h3>
+              </GridColumn>
+            </Grid.Row>
+            <Grid.Row>
+              <GridColumn
+                width={8}
+                style={{ justifyContent: "right", display: "flex" }}
+              >
+                <Button
+                  style={{
+                    borderColor: "var(--primary-color)",
+                    color: "var(--primary-color)",
+                    backgroundColor: "white",
+                    border: "solid",
+                  }}
+                  onClick={() => setOpen(false)}
+                >
+                  Cancel
+                </Button>
+              </GridColumn>
+
+              <GridColumn
+                width={8}
+                style={{ justifyContent: "left", display: "flex" }}
+              >
+                <Button
+                  style={{ backgroundColor: "var(--primary-color)" }}
+                  primary
+                  onClick={handleDelete}
+                >
+                  Delete
+                </Button>
+              </GridColumn>
+            </Grid.Row>
+          </Grid>
         </Modal.Content>
-        <Modal.Actions>
-          <Button onClick={() => setOpen(false)}>Cancel</Button>
-          <Button color="red" onClick={handleDelete}>
-            Delete
-          </Button>
-        </Modal.Actions>
       </Modal>
     </Container>
   );

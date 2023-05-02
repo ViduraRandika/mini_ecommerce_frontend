@@ -44,7 +44,7 @@ const MainLayout = ({ Component, title }) => {
   return (
     <>
       <NavBar />
-      <Container>
+      <Container style={{marginTop:"40px"}}>
         <Grid>
           <Grid.Row>
             <h1>

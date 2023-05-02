@@ -119,7 +119,7 @@ const EditProduct = () => {
   return (
     <>
       <NavBar />
-      <Container style={{ margin: "80px" }}>
+      <Container style={{ margin: "40px" }}>
         <Breadcrumb size="massive">
           <Breadcrumb.Section>
             <b>PRODUCTS</b>
