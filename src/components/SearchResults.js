@@ -1,7 +1,33 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { useParams } from "react-router-dom";
 import { Container, Grid, GridColumn, Image } from "semantic-ui-react";
+import { searchProduct } from "../services/ProductService";
+import { toast } from "react-toastify";
 
 const SearchResults = () => {
+    const { id } = useParams();
+    const fetchData = async () => {
+      try {
+        const res = await searchProduct(id);
+          if (res) {
+        } else {
+          toast("Failed to fetch product details", {
+            theme: "colored",
+            type: "error",
+            autoClose: 3000,
+          });
+        }
+      } catch (error) {
+        toast("Failed to fetch product details", {
+          theme: "colored",
+          type: "error",
+          autoClose: 3000,
+        });
+      }
+    };
+    useEffect(() => {
+      fetchData();
+    }, [id]);
   return (
     <Container style={{ marginTop: "40px" }}>
       <Grid>

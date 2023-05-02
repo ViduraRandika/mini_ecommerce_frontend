@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Breadcrumb,
   Button,
@@ -12,7 +12,6 @@ import {
 import * as Yup from "yup";
 import NavBar from "./NavBar";
 import {
-  addNewProduct,
   getSelectedProductDetails,
   updateSelectedProduct,
 } from "../services/ProductService";
@@ -29,11 +28,10 @@ const validationSchema = Yup.object().shape({
 });
 
 const EditProduct = () => {
-    const { id } = useParams();
-    
-    const navigate = useNavigate();
+  const { id } = useParams();
 
-  const [isLoading, setIsLoading] = useState(true);
+  const navigate = useNavigate();
+
   const [values, setValues] = useState({
     sku: "",
     name: "",
@@ -60,14 +58,12 @@ const EditProduct = () => {
           autoClose: 3000,
         });
       }
-      setIsLoading(false);
     } catch (error) {
       toast("Failed to fetch product details", {
         theme: "colored",
         type: "error",
         autoClose: 3000,
       });
-      setIsLoading(false);
     }
   };
 
@@ -76,28 +72,24 @@ const EditProduct = () => {
   }, []);
 
   const [errors, setErrors] = useState({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    setIsSubmitting(true);
     setErrors({});
 
     validationSchema
       .validate(values, { abortEarly: false })
       .then(async () => {
         // Validation succeeded
-        setIsSubmitting(true);
-
-        const res = await updateSelectedProduct(id,values);
+        const res = await updateSelectedProduct(id, values);
         if (res) {
-            fetchData();
+          fetchData();
           toast("Product updated", {
             theme: "colored",
             type: "success",
             autoClose: 3000,
           });
-            navigate("/")
+          navigate("/");
         } else {
           toast("Something went wront, please try again", {
             theme: "colored",
@@ -113,9 +105,6 @@ const EditProduct = () => {
           errors[error.path] = error.message;
         });
         setErrors(errors);
-      })
-      .finally(() => {
-        setIsSubmitting(false);
       });
   };
 
@@ -295,7 +284,7 @@ const EditProduct = () => {
                   }}
                   onClick={handleSubmit}
                 >
-                 Save changes
+                  Save changes
                 </Button>
               </GridColumn>
             </Grid.Row>

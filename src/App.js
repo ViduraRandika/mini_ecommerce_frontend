@@ -35,7 +35,24 @@ function App() {
             <Route
               exact
               path="/"
-              element={<MainLayout Component={MainPage} />}
+              element={<MainLayout Component={MainPage} title={"PRODUCTS"} />}
+            />
+            <Route
+              exact
+              path="/favourite-products"
+              element={
+                <MainLayout
+                  Component={FavouriteProducts}
+                  title={"FAVOURITE PRODUCTS"}
+                />
+              }
+            />
+            <Route
+              exact
+              path="/search/:id"
+              element={
+                <MainLayout Component={SearchResults} title={"PRODUCTS"} />
+              }
             />
             <Route exact path="/add-new-product" element={<AddProduct />} />
             <Route exact path="/edit-product/:id" element={<EditProduct />} />
@@ -47,4 +64,3 @@ function App() {
 }
 
 export default App;
-{/* <MainLayout Component={SearchResults}/> */}

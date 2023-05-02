@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import {
   Breadcrumb,
   Button,
@@ -35,19 +35,15 @@ const AddProduct = () => {
   });
 
   const [errors, setErrors] = useState({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    setIsSubmitting(true);
     setErrors({});
 
     validationSchema
       .validate(values, { abortEarly: false })
       .then(async () => {
         // Validation succeeded
-        setIsSubmitting(true);
-
         const res = await addNewProduct(values);
         if (res) {
           toast("Product added", {
@@ -71,9 +67,6 @@ const AddProduct = () => {
           errors[error.path] = error.message;
         });
         setErrors(errors);
-      })
-      .finally(() => {
-        setIsSubmitting(false);
       });
   };
 

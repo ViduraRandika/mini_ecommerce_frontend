@@ -1,8 +1,17 @@
 import React, { useEffect, useState } from "react";
-import { Container, Grid, GridColumn, Image } from "semantic-ui-react";
 import {
+  Button,
+  Container,
+  Grid,
+  GridColumn,
+  Image,
+  Modal,
+} from "semantic-ui-react";
+import {
+  addToFavourite,
   deleteSelectedProduct,
   getAllProducts,
+  removeFromFavourite,
 } from "../services/ProductService";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
@@ -10,6 +19,8 @@ import { useNavigate } from "react-router-dom";
 const MainPage = () => {
   const [products, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [deleteProductId, setDeleteProductId] = useState(null);
+  const [open, setOpen] = useState(false);
 
   const navigate = useNavigate();
 
@@ -36,8 +47,9 @@ const MainPage = () => {
     }
   };
 
-  const handleDelete = async (id) => {
-    const res = await deleteSelectedProduct(id);
+  const handleDelete = async () => {
+    setOpen(false);
+    const res = await deleteSelectedProduct(deleteProductId);
     if (res) {
       fetchData();
       toast("Product deleted", {
@@ -57,9 +69,40 @@ const MainPage = () => {
   const handleEdit = (id) => {
     navigate(`/edit-product/${id}`);
   };
+
+  const handleAddToFavourite = async (id) => {
+    const res = await addToFavourite(id);
+    if (res) {
+      fetchData();
+    } else {
+      toast("Something went wront, please try again", {
+        theme: "colored",
+        type: "error",
+        autoClose: 3000,
+      });
+    }
+  };
+
+  const handleRemoveFromFavourite = async (id) => {
+    const res = await removeFromFavourite(id);
+    if (res) {
+      fetchData();
+    } else {
+      toast("Something went wront, please try again", {
+        theme: "colored",
+        type: "error",
+        autoClose: 3000,
+      });
+    }
+  };
   useEffect(() => {
     fetchData();
   }, []);
+
+  const handleDeleteClick = (id) => {
+    setOpen(true);
+    setDeleteProductId(id);
+  };
   return (
     <Container style={{ marginTop: "40px" }}>
       <Grid>
@@ -163,8 +206,9 @@ const MainPage = () => {
                       style={{
                         color: "var(--primary-color)",
                         cursor: "pointer",
+                        marginRight: "10px",
                       }}
-                      onClick={() => handleDelete(product._id)}
+                      onClick={() => handleDeleteClick(product._id)}
                     >
                       <i className="trash icon"></i>
                     </span>
@@ -173,20 +217,33 @@ const MainPage = () => {
                       style={{
                         color: "var(--primary-color)",
                         cursor: "pointer",
+                        marginRight: "10px",
                       }}
                       onClick={() => handleEdit(product._id)}
                     >
                       <i className="pencil icon"></i>
                     </span>
-
-                    <span
-                      style={{
-                        color: "var(--primary-color)",
-                        cursor: "pointer",
-                      }}
-                    >
-                      <i className="star outline icon"></i>
-                    </span>
+                    {product.isFavourite ? (
+                      <span
+                        style={{
+                          color: "var(--primary-color)",
+                          cursor: "pointer",
+                        }}
+                        onClick={() => handleRemoveFromFavourite(product._id)}
+                      >
+                        <i className="star icon"></i>
+                      </span>
+                    ) : (
+                      <span
+                        style={{
+                          color: "var(--primary-color)",
+                          cursor: "pointer",
+                        }}
+                        onClick={() => handleAddToFavourite(product._id)}
+                      >
+                        <i className="star outline icon"></i>
+                      </span>
+                    )}
                   </div>
                 </GridColumn>
               </Grid.Row>
@@ -194,6 +251,18 @@ const MainPage = () => {
           })
         )}
       </Grid>
+      <Modal open={open} onClose={() => setOpen(false)} size="tiny">
+        <Modal.Header>Delete Product</Modal.Header>
+        <Modal.Content>
+          <p>Are you sure you want to delete this product?</p>
+        </Modal.Content>
+        <Modal.Actions>
+          <Button onClick={() => setOpen(false)}>Cancel</Button>
+          <Button color="red" onClick={handleDelete}>
+            Delete
+          </Button>
+        </Modal.Actions>
+      </Modal>
     </Container>
   );
 };
