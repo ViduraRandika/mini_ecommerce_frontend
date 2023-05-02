@@ -50,7 +50,6 @@ const AddProduct = () => {
 
         const res = await addNewProduct(values);
         if (res) {
-          fetchData();
           toast("Product added", {
             theme: "colored",
             type: "success",
