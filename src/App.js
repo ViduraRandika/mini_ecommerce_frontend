@@ -6,6 +6,8 @@ import MainPage from './components/MainPage';
 import SearchResults from './components/SearchResults';
 import Register from './components/Register';
 import Login from './components/Login';
+import VendorPrivateRoute from './components/VendorPrivateRoute';
+import AddProduct from './components/AddProduct';
 
 function App() {
   return (
@@ -13,7 +15,13 @@ function App() {
       <BrowserRouter basename='/'>
         <Routes>
           <Route exact path="/register" element={ <Register/> } />
-          <Route exact path="/login" element={ <Login/> } />
+          <Route exact path="/login" element={<Login />} />
+          
+          {/* ONLY LOGGED IN VENDORS CAN ACCESS */}
+          <Route element={<VendorPrivateRoute />}>
+            <Route exact path="/" element={<MainLayout Component={MainPage}/>} />
+            <Route exact path="/add-new-product" element={<AddProduct/>} />
+          </Route>
         </Routes>
       </BrowserRouter>
     </>

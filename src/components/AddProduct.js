@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import {
   Breadcrumb,
   Button,
@@ -9,12 +9,66 @@ import {
   GridColumn,
   Image,
 } from "semantic-ui-react";
+import * as Yup from "yup";
 import NavBar from "./NavBar";
+import { addNewProduct } from "../services/ProductService";
+
+const validationSchema = Yup.object().shape({
+  sku: Yup.string().required("SKU is required"),
+  name: Yup.string().required("Name is required"),
+  qty: Yup.number()
+    .positive("Quantity must be a positive number")
+    .required("Quantity is required"),
+  description: Yup.string().required("Description is required"),
+});
 
 const AddProduct = () => {
-  const submitButtonRef = useRef(null);
+  const [values, setValues] = useState({
+    sku: "",
+    name: "",
+    qty: 0,
+    description: "",
+  });
 
-  const handleSubmit = () => {};
+  const [errors, setErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    setIsSubmitting(true);
+    setErrors({});
+
+    validationSchema
+      .validate(values, { abortEarly: false })
+      .then(async () => {
+        // Validation succeeded
+        setIsSubmitting(true);
+
+        const res = await addNewProduct(values);
+        console.log(res);
+        console.log(values);
+      })
+      .catch((validationErrors) => {
+        // Validation failed
+        const errors = {};
+        validationErrors.inner.forEach((error) => {
+          errors[error.path] = error.message;
+        });
+        setErrors(errors);
+      })
+      .finally(() => {
+        setIsSubmitting(false);
+      });
+  };
+
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    setValues((values) => ({
+      ...values,
+      [name]: value,
+    }));
+  };
+
   return (
     <>
       <NavBar />
@@ -46,7 +100,13 @@ const AddProduct = () => {
                       backgroundColor: "var(--elementbg-color)",
                       border: "0",
                     }}
+                    name="sku"
+                    value={values.sku}
+                    onChange={handleChange}
                   />
+                  {errors.sku && (
+                    <div style={{ color: "red" }}>{errors.sku}</div>
+                  )}
                 </Form.Field>
               </GridColumn>
             </Grid.Row>
@@ -61,7 +121,13 @@ const AddProduct = () => {
                       backgroundColor: "var(--elementbg-color)",
                       border: "0",
                     }}
+                    name="name"
+                    value={values.name}
+                    onChange={handleChange}
                   />
+                  {errors.name && (
+                    <div style={{ color: "red" }}>{errors.name}</div>
+                  )}
                 </Form.Field>
               </GridColumn>
               <GridColumn width={8}>
@@ -74,7 +140,13 @@ const AddProduct = () => {
                       backgroundColor: "var(--elementbg-color)",
                       border: "0",
                     }}
+                    name="qty"
+                    value={values.qty}
+                    onChange={handleChange}
                   />
+                  {errors.qty && (
+                    <div style={{ color: "red" }}>{errors.qty}</div>
+                  )}
                 </Form.Field>
               </GridColumn>
             </Grid.Row>
@@ -92,7 +164,13 @@ const AddProduct = () => {
                       backgroundColor: "var(--elementbg-color)",
                       border: "0",
                     }}
+                    name="description"
+                    value={values.description}
+                    onChange={handleChange}
                   />
+                  {errors.description && (
+                    <div style={{ color: "red" }}>{errors.description}</div>
+                  )}
                 </Form.Field>
               </GridColumn>
             </Grid.Row>
@@ -138,7 +216,6 @@ const AddProduct = () => {
                     backgroundColor: "var(--primary-color)",
                     color: "white",
                   }}
-                  ref={submitButtonRef}
                   onClick={handleSubmit}
                 >
                   Add product
