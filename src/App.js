@@ -11,6 +11,7 @@ import AddProduct from './components/AddProduct';
 import { ToastContainer } from 'react-toastify';
 import "react-toastify/dist/ReactToastify.css";
 import EditProduct from './components/EditProduct';
+import GuestRoute from "./components/GuestRoute";
 
 function App() {
   return (
@@ -27,8 +28,11 @@ function App() {
       />
       <BrowserRouter basename="/">
         <Routes>
-          <Route exact path="/register" element={<Register />} />
-          <Route exact path="/login" element={<Login />} />
+          {/* ONLY GUEST USERS CAN ACCESS */}
+          <Route element={<GuestRoute />}>
+            <Route exact path="/register" element={<Register />} />
+            <Route exact path="/login" element={<Login />} />
+          </Route>
 
           {/* ONLY LOGGED IN VENDORS CAN ACCESS */}
           <Route element={<VendorPrivateRoute />}>

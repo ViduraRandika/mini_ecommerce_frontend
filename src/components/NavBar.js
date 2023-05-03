@@ -1,16 +1,17 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import { Button, Menu } from "semantic-ui-react";
+import { Link, useNavigate } from "react-router-dom";
+import { Button, Dropdown, Menu } from "semantic-ui-react";
 import AuthService from "../services/AuthService";
 
 const NavBar = () => {
+  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
   const [name, setName] = useState("");
   const [isLogged, setIsLogged] = useState(false);
 
   const fetchData = async () => {
     try {
-      const res = await AuthService.isLoggedIn();
+      const res = await AuthService.getLoggedInUserDetails();
       if (res) {
         setIsLoading(false);
         setName(res.name);
@@ -20,6 +21,13 @@ const NavBar = () => {
       setIsLoading(false);
     }
   };
+
+  const logout = async () => {
+    const res = await AuthService.logout();
+    if (res) {
+      navigate("/login");
+    }
+  }
 
   useEffect(() => {
     fetchData();
@@ -49,9 +57,11 @@ const NavBar = () => {
       ) : isLogged ? (
         <Menu.Menu position="right" style={{ margin: "0 10px 0 0" }}>
           <Menu.Item>
-            <Link style={{ cursor: "pointer", color: "black" }} to={"/"}>
-              <h3>Hi, {name}</h3>
-            </Link>
+            <Dropdown item text={`Hi, ${name}`}>
+              <Dropdown.Menu>
+                <Dropdown.Item onClick={()=>logout()}>Logout</Dropdown.Item>
+              </Dropdown.Menu>
+            </Dropdown>
           </Menu.Item>
         </Menu.Menu>
       ) : (

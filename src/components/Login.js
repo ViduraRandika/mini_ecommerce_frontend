@@ -1,32 +1,26 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 axios.defaults.withCredentials = true;
+
 const Login = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    axios
+    await axios
       .post("http://localhost:8000/api/login", formData)
       .then((res) => {
-        console.log("Form submitted successfully");
-        console.log(res.data);
+        navigate("/");
       })
       .catch((err) => {
         console.error("Form submission failed", err);
       });
   };
-
-    const test = () => { 
-        axios.post("http://localhost:8000/api/verify").then((res) => { 
-
-        }).catch((err) => {
-            console.error(err);
-        })
-    }
 
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -54,8 +48,7 @@ const Login = () => {
           />
         </label>
         <button type="submit">Submit</button>
-          </form>
-          <button onClick={test}>CLICKL</button>
+      </form>
     </>
   );
 };
